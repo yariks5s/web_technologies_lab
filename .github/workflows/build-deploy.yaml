@@ -5,12 +5,11 @@ on:
 
 jobs:
 
-  CheckLabels:
-    runs-on: ubuntu-latest
-    if: contains(github.event.issue.labels.*.name, 'Can be merged') 
+   CheckLabels:
+    if: ${{ contains(github.event.*.labels.*.name, 'Can be merged') }}
     steps:
-      - name: CheckLabels check
-        run: echo CheckLabels passed 
+      - name: Labels check
+        run: echo Labels check passed
 
   Build:
     runs-on: ubuntu-latest
