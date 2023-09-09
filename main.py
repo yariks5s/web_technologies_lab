@@ -10,7 +10,6 @@ from forms import NewsForm
 
 app = FastAPI()
 
-client = 0
 templates = Jinja2Templates(directory="templates")
 
 @app.on_event("startup")
@@ -20,6 +19,10 @@ async def database(**kwargs):
     client.command('INSERT INTO NEWS VALUES (\'1\', \'John killed mother\', \'Wow, this is ridiculous\', 1, 1, \'photo\');')
     client.command('INSERT INTO AUTHOR VALUES (\'1\', \'John\', 55, \'john@email.com\');')
     client.command('INSERT INTO CATEGORIES VALUES (\'1\', \'Category 1\');')
+ 
+@app.get('/is_up/')
+async def is_up():
+    return "OK"
 
 @app.get('/')
 async def get_index(request: Request):
