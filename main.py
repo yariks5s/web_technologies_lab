@@ -1,16 +1,12 @@
-import json
 from fastapi import FastAPI, Path
 from clickhouse_driver import Client, connect
 from database import startup
-from io import BytesIO
 from fastapi import FastAPI, Request, File, UploadFile, Form
 # from PIL import Image
 import uvicorn
-from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.templating import Jinja2Templates
 from router import router as users_router
 # from database import con, create_db, users, books, chapters, authors
-from fastapi.staticfiles import StaticFiles
 from forms import NewsForm
 
 app = FastAPI()
