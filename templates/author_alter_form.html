@@ -1,0 +1,24 @@
+<html>
+    <head>
+        <title>Book Info Form</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <h1>Book Info Form</h1>
+        <a href="/">Return to home</a>
+        {% for id, author in author_dict.items() %}
+        <form method="POST" enctype="multipart/form-data" action="/create_author/{{ author['id'] }}">
+            <label for="name">Book name:</label>
+            <input type="text" name="name" value="{{ author['name'] }}" required><br><br>
+
+            <label for="likes">Description:</label>
+            <input type="number" name="likes" value="{{ author['likes'] }}" required><br><br>
+            <label for="category_id">Category:</label>
+            <input type="text" name="email" value="{{ author['email'] }}" required><br><br>
+
+            <input type="submit" value="Submit">
+        </form>
+        {% endfor %}
+    </body>
+</html>

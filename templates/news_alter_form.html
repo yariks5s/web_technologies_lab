@@ -1,0 +1,30 @@
+<html>
+    <head>
+        <title>Book Info Form</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <h1>Book Info Form</h1>
+        <a href="/">Return to home</a>
+        {% for id, news in news_dict.items() %}
+        <form method="POST" enctype="multipart/form-data" action="/create_news/{{ news['id'] }}">
+            <!-- <label for="id">Book id:</label>
+            <input type="number" name="id" value="{{ news['id'] }}" required><br><br> WE ARE NOT ABLE TO CHANGE IT-->
+            <label for="title">Book name:</label>
+            <input type="text" name="title" value="{{ news['title'] }}" required><br><br>
+
+            <label for="description">Description:</label>
+            <input type="text" name="description" value="{{ news['description'] }}" required><br><br>
+            <label for="category_id">Category:</label>
+            <input type="number" name="category_id" value="{{ news['category_id'] }}" required><br><br>
+            <label for="author_id">Author:</label>
+            <input type="number" name="author_id" value="{{ news['author_id'] }}" required><br><br>
+            <label for="photo">Photo:</label>
+            <input type="text" name="photo" value="{{ news['photo'] }}" required><br><br>
+
+            <input type="submit" value="Submit">
+        </form>
+        {% endfor %}
+    </body>
+</html>

@@ -1,0 +1,19 @@
+<html>
+    <head>
+        <title>Book Info Form</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <h1>Book Info Form</h1>
+        <a href="/">Return to home</a>
+        {% for id, categories in categories_dict.items() %}
+        <form method="POST" enctype="multipart/form-data" action="/create_categories/{{ categories['id'] }}">
+            <label for="name">Book name:</label>
+            <input type="text" name="name" value="{{ categories['name'] }}" required><br><br>
+
+            <input type="submit" value="Submit">
+        </form>
+        {% endfor %}
+    </body>
+</html>

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+<head>
+    <title>Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<body>
+
+
+
+{% for id, news in news_dict.items() %}
+<div>
+    <i></i> <b>{{ news['title'] }}</b>
+     - {{ news['description']}}
+</div>
+{% endfor %}
+
+</body>
+</html>
