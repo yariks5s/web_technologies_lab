@@ -24,4 +24,3 @@ def model_queries(client):
                                name String)
                     engine=MergeTree 
                     order by id;''')
-    
