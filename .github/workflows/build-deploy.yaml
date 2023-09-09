@@ -3,11 +3,8 @@ name: Build
 on:
   push:
 
-  workflow_dispatch:
-
 jobs:
-
-  Build:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Push repo
