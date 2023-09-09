@@ -9,6 +9,9 @@ jobs:
     runs-on: ubuntu-latest
     if: |
       contains(github.event.issue.labels.*.name, '<can be merged>') 
+    steps:
+      - name: CheckLabes check
+        run: echo "CheckLabes passed"
 
   Build:
     runs-on: ubuntu-latest
