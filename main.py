@@ -1,5 +1,4 @@
 from fastapi import FastAPI, Path
-from clickhouse_driver import Client, connect
 from database import startup
 from fastapi import FastAPI, Request, File, UploadFile, Form
 # from PIL import Image
