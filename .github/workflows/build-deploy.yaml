@@ -1,21 +1,16 @@
-name: CheckLabels
+name: Build
 
 on:
   push:
 
 jobs:
-  build:
+
+  CheckLabes:
     runs-on: ubuntu-latest
     if: |
       contains(github.event.issue.labels.*.name, '<can be merged>') 
 
-name: Build and requirements
-
-on:
-  push:
-
-jobs:
-  build:
+  Build:
     runs-on: ubuntu-latest
     steps:
       - name: Push repo
@@ -31,13 +26,7 @@ jobs:
       - name: Run tests
         run: pip install httpx[cli] && pytest
 
-name: Pytest
-
-on:
-  push:
-
-jobs:
-  build:
+  Pytest:
     runs-on: ubuntu-latest
     steps:
       - name: Run tests
