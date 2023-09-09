@@ -5,7 +5,7 @@ on:
 
 jobs:
 
-   CheckLabels:
+  CheckLabels:
     if: ${{ contains(github.event.*.labels.*.name, 'Can be merged') }}
     steps:
       - name: Labels check
