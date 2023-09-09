@@ -7,8 +7,7 @@ jobs:
 
   CheckLabels:
     runs-on: ubuntu-latest
-    if: |
-      contains(github.event.issue.labels.*.name, 'Can be merged') 
+    if: contains(github.event.issue.labels.*.name, 'Can be merged') 
     steps:
       - name: CheckLabels check
         run: echo CheckLabels passed 
