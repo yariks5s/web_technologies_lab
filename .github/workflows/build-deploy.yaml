@@ -13,7 +13,7 @@ jobs:
         run: echo Labels check passed
 
   Build:
-    
+    runs-on: ubuntu-latest
     needs: CheckLabels
     steps:
       - name: Push repo
