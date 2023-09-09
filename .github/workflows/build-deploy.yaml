@@ -14,7 +14,6 @@ jobs:
 
   Build:
     runs-on: ubuntu-latest
-    needs: CheckLabels
     steps:
       - name: Push repo
         uses: actions/checkout@v4
@@ -31,7 +30,7 @@ jobs:
 
   Pytest:
     runs-on: ubuntu-latest
-    needs: [CheckLabels, Build]
+    needs: Build
     steps:
       - name: Run tests
         run: pip install httpx[cli] && pytest
