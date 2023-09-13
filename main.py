@@ -1,16 +1,18 @@
-from fastapi import FastAPI, Path
 from database import startup
-from fastapi import FastAPI, Request, File, UploadFile, Form
+from fastapi import FastAPI, Request, File, UploadFile, Form, Path
 # from PIL import Image
 import uvicorn
 from fastapi.templating import Jinja2Templates
 from router import router as users_router
+from fastapi.responses import JSONResponse
 # from database import con, create_db, users, books, chapters, authors
 from forms import NewsForm
+from models import CATEGORIES
 
 app = FastAPI()
 
 templates = Jinja2Templates(directory="templates")
+# app.mount("/static", StaticFiles(directory="templates/static"), name="static")
 
 @app.on_event("startup")
 async def database(**kwargs):
@@ -163,9 +165,17 @@ async def submit_form(id: str = Form('id'), name: str = Form('name')):
     # Return the ID of the newly created news instance.
     return {"message": "Form submitted successfully."}
 
+@app.post("/createJSON_categories/")
+async def submit_form(categories: CATEGORIES):
+    try:
+        client.command(f'INSERT INTO CATEGORIES VALUES (\'{categories.id}\', \'{categories.name}\');')
+        return {"message": "OK"}
+    except:
+        return {"message": "FATAL"}
+
 @app.get("/change_categories/{id}")
 async def change_author(request: Request, id: int):
-    data = client.command(f'SELECT *, id FROM CATEGORIES WHERE id={id};')
+    data = client.command(f'SELECT *, id FROM CATEGORIES WHERE id=\'{id}\';')
     categories_dict = {}
     i = 0
     while i < len(data) - 1:
@@ -179,19 +189,36 @@ async def change_author(request: Request, id: int):
     context = {"categories_dict": categories_dict}
     return templates.TemplateResponse("categories_alter_form.html", {"request": request, **context})
 
+@app.put("/changeJSON_categories/")
+async def submit_form(categories: CATEGORIES):
+    try:
+        client.command(f'ALTER TABLE CATEGORIES UPDATE name = \'{categories.name}\' WHERE id = \'{categories.id}\';')
+        return {"message": "OK"}
+    except:
+        return {"message": "FATAL"}
+
 @app.post("/create_categories/{categories_id}")
 async def submit_form(categories_id: int, name: str = Form('name')):
 
     # Create a news instance.
-    client.command(f'ALTER TABLE CATEGORIES UPDATE name=\'{name}\' WHERE id={categories_id};')
+    client.command(f'ALTER TABLE CATEGORIES UPDATE name=\'{name}\' WHERE id=\'{categories_id}\';')
 
     # Return the ID of the newly created news instance.
     return {"message": "Form submitted successfully."}
 
 @app.get("/delete_categories/{categories_id}")
 async def delete_categories(categories_id: int):
-    client.command(f'DELETE FROM CATEGORIES WHERE id={categories_id}')
+    client.command(f'DELETE FROM CATEGORIES WHERE id=\'{categories_id}\'')
 
     return {"message": "Deleting submitted successfully."}
+
+@app.delete("/deleteJSON_categories/")
+async def delete_categories(categories: CATEGORIES):
+    try:
+        client.command(f'DELETE FROM CATEGORIES WHERE id=\'{categories.id}\'')
+        return {"message": "OK"}
+    except:
+        return {"message": "FATAL"}
+
 
 #endregion
