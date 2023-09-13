@@ -21,6 +21,10 @@ def model_queries(client):
                    order by id;''')
     client.command('''CREATE TABLE IF NOT EXISTS
                     CATEGORIES(id String PRIMARY KEY,
-                               name String)
+                               name Nullable(String))
                     engine=MergeTree 
                     order by id;''')
+
+class CATEGORIES(BaseModel):
+    id: str
+    name: str
