@@ -1,18 +1,21 @@
 from database import startup
 from fastapi import FastAPI, Request, File, UploadFile, Form, Path
 # from PIL import Image
-import uvicorn
+import base64
 from fastapi.templating import Jinja2Templates
 from router import router as users_router
 from fastapi.responses import JSONResponse
 # from database import con, create_db, users, books, chapters, authors
 from forms import NewsForm
 from models import CATEGORIES
+from fastapi.staticfiles import StaticFiles
+from PIL import Image
+from io import BytesIO
 
 app = FastAPI()
 
 templates = Jinja2Templates(directory="templates")
-# app.mount("/static", StaticFiles(directory="templates/static"), name="static")
+app.mount("/static", StaticFiles(directory="templates/static"), name="static")
 
 @app.on_event("startup")
 async def database(**kwargs):
@@ -56,10 +59,45 @@ async def add_news(request: Request):
     return templates.TemplateResponse("news_create_form.html", {"request": request})
 
 @app.post("/create_news/")
-async def submit_form(id: str = Form('id'), title: str = Form('title'), description: str = Form('description'), category_id: str = Form('category_id'), author_id: str = Form('author_id'), photo: str = Form('photo')):
+async def submit_form(id: str = Form('id'), title: str = Form('title'), description: str = Form('description'), category_id: str = Form('category_id'), author_id: str = Form('author_id'), photo: UploadFile = File(None)):
 
+    if photo is not None and photo.content_type.split("/")[0] == "image":
+        try:
+            with Image.open(photo.file) as img:
+                # Resize the photo to a maximum width and height of 800 pixels
+                img.thumbnail((800, 800))
+
+                # Convert the photo to RGB mode
+                if img.mode != "RGB":
+                    img = img.convert("RGB")
+
+                # Convert the photo to bytes
+                with BytesIO() as output:
+                    img.save(output, format="JPEG")
+                    photo_bytes = output.getvalue()
+                print(photo_bytes)
+                client.command(f'INSERT INTO NEWS VALUES (\'{id}\', \'{title}\', \'{description}\', \'{category_id}\', \'{author_id}\', \'{photo_bytes}\' ROW FORMAT RAW);')
+        except Exception as e:
+            return {"message": "Error processing photo: {}".format(e)}
+    else:
+        try:
+            with Image.open("templates/static/img/default_user.png") as img:
+                # Resize the photo to a maximum width and height of 800 pixels
+                img.thumbnail((800, 800))
+
+                # Convert the photo to RGB mode
+                if img.mode != "RGB":
+                    img = img.convert("RGB")
+
+                # Convert the photo to bytes
+                with BytesIO() as output:
+                    img.save(output, format="JPEG")
+                    photo_bytes = output.getvalue()
+
+                client.command(f'INSERT INTO NEWS VALUES (\'{id}\', \'{title}\', \'{description}\', \'{category_id}\', \'{author_id}\', \'{photo_bytes}\' ROW FORMAT RAW);')
+        except Exception as e:
+            return {"message": "Error processing photo: {}".format(e)}
     # Create a news instance.
-    client.command(f'INSERT INTO NEWS VALUES (\'{id}\', \'{title}\', \'{description}\', \'{category_id}\', \'{author_id}\', \'{photo}\');')
 
     # Return the ID of the newly created news instance.
     return {"message": "Form submitted successfully."}
