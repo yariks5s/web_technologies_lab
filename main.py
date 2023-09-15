@@ -61,42 +61,9 @@ async def add_news(request: Request):
 @app.post("/create_news/")
 async def submit_form(id: str = Form('id'), title: str = Form('title'), description: str = Form('description'), category_id: str = Form('category_id'), author_id: str = Form('author_id'), photo: UploadFile = File(None)):
 
-    if photo is not None and photo.content_type.split("/")[0] == "image":
-        try:
-            with Image.open(photo.file) as img:
-                # Resize the photo to a maximum width and height of 800 pixels
-                img.thumbnail((800, 800))
+    photo_bytes = "static/img/default_user.png"
 
-                # Convert the photo to RGB mode
-                if img.mode != "RGB":
-                    img = img.convert("RGB")
-
-                # Convert the photo to bytes
-                with BytesIO() as output:
-                    img.save(output, format="JPEG")
-                    photo_bytes = output.getvalue()
-                print(photo_bytes)
-                client.command(f'INSERT INTO NEWS VALUES (\'{id}\', \'{title}\', \'{description}\', \'{category_id}\', \'{author_id}\', \'{photo_bytes}\' ROW FORMAT RAW);')
-        except Exception as e:
-            return {"message": "Error processing photo: {}".format(e)}
-    else:
-        try:
-            with Image.open("templates/static/img/default_user.png") as img:
-                # Resize the photo to a maximum width and height of 800 pixels
-                img.thumbnail((800, 800))
-
-                # Convert the photo to RGB mode
-                if img.mode != "RGB":
-                    img = img.convert("RGB")
-
-                # Convert the photo to bytes
-                with BytesIO() as output:
-                    img.save(output, format="JPEG")
-                    photo_bytes = output.getvalue()
-
-                client.command(f'INSERT INTO NEWS VALUES (\'{id}\', \'{title}\', \'{description}\', \'{category_id}\', \'{author_id}\', \'{photo_bytes}\' ROW FORMAT RAW);')
-        except Exception as e:
-            return {"message": "Error processing photo: {}".format(e)}
+    client.command(f'INSERT INTO NEWS VALUES (\'{id}\', \'{title}\', \'{description}\', \'{category_id}\', \'{author_id}\', \'{photo_bytes}\');')
     # Create a news instance.
 
     # Return the ID of the newly created news instance.
