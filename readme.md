@@ -38,3 +38,5 @@ Take a look at the pytest, its automated testing framework.
 TASK C6. (3 бали) Bootstrap (Landing Page)
 We have main page with all the items.
 
+TASK С7. (1 бал) SEO оптимізація сторінки.
+![this is the seo result on my site](/templates/static/img/Seo_result.png)
