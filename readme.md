@@ -34,3 +34,7 @@ also added task b8 and c19, need to tell about all previous tasks
 
 QA1. (2 бали) Автоматичне тестування Web API. Налаштувати середовище для тестування Web API для проєкту з C5 з використанням можливостей Postman, SOAP UI, або подібного ПЗ.
 Take a look at the pytest, its automated testing framework.
+
+TASK C6. (3 бали) Bootstrap (Landing Page)
+We have main page with all the items.
+

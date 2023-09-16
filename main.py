@@ -1,24 +1,27 @@
 from database import startup
 from fastapi import FastAPI, Request, File, UploadFile, Form, Path
 # from PIL import Image
-import uvicorn
+import base64
 from fastapi.templating import Jinja2Templates
 from router import router as users_router
 from fastapi.responses import JSONResponse
 # from database import con, create_db, users, books, chapters, authors
 from forms import NewsForm
 from models import CATEGORIES
+from fastapi.staticfiles import StaticFiles
+from PIL import Image
+from io import BytesIO
 
 app = FastAPI()
 
 templates = Jinja2Templates(directory="templates")
-# app.mount("/static", StaticFiles(directory="templates/static"), name="static")
+app.mount("/static", StaticFiles(directory="templates/static"), name="static")
 
 @app.on_event("startup")
 async def database(**kwargs):
     global client
     client = startup()
-    client.command('INSERT INTO NEWS VALUES (\'1\', \'John killed mother\', \'Wow, this is ridiculous\', 1, 1, \'photo\');')
+    client.command('INSERT INTO NEWS VALUES (\'1\', \'John killed mother\', \'Wow, this is ridiculous\', 1, 1, \'static/img/default_user.png\');')
     client.command('INSERT INTO AUTHOR VALUES (\'1\', \'John\', 55, \'john@email.com\');')
     client.command('INSERT INTO CATEGORIES VALUES (\'1\', \'Category 1\');')
  
@@ -51,15 +54,38 @@ async def get_index(request: Request):
     return templates.TemplateResponse("index.html", {"request": request, **context})
 
 #region OPERATIONS ON NEWS
+@app.get('/get_news/{id}')
+async def get_news(request: Request, id: str):
+    print(id)
+    data = client.command(f'SELECT *, id FROM NEWS WHERE id=\'{id}\';')
+    news_dict = {}
+    i = 0
+    while i < len(data) - 5:
+        news_dict[data[i]] = {
+            'id': data[i],
+            'title': data[i + 1],
+            'description': data[i + 2],
+            'category_id': data[i + 3],
+            'author_id': data[i + 4],
+            'photo': data[i + 5]
+        }
+        i += 6
+    print(news_dict)
+
+    context = {"news_dict": news_dict}
+    return templates.TemplateResponse("news_get_form.html", {"request": request, **context})
+
 @app.get("/add_news/")
 async def add_news(request: Request):
     return templates.TemplateResponse("news_create_form.html", {"request": request})
 
 @app.post("/create_news/")
-async def submit_form(id: str = Form('id'), title: str = Form('title'), description: str = Form('description'), category_id: str = Form('category_id'), author_id: str = Form('author_id'), photo: str = Form('photo')):
+async def submit_form(id: str = Form('id'), title: str = Form('title'), description: str = Form('description'), category_id: str = Form('category_id'), author_id: str = Form('author_id')):
 
+    photo_bytes = "static/img/default_user.png"
+
+    client.command(f'INSERT INTO NEWS VALUES (\'{id}\', \'{title}\', \'{description}\', \'{category_id}\', \'{author_id}\', \'{photo_bytes}\');')
     # Create a news instance.
-    client.command(f'INSERT INTO NEWS VALUES (\'{id}\', \'{title}\', \'{description}\', \'{category_id}\', \'{author_id}\', \'{photo}\');')
 
     # Return the ID of the newly created news instance.
     return {"message": "Form submitted successfully."}
@@ -219,6 +245,5 @@ async def delete_categories(categories: CATEGORIES):
         return {"message": "OK"}
     except:
         return {"message": "FATAL"}
-
 
 #endregion
