@@ -24,9 +24,9 @@ jobs:
           echo HOST=v1bf2ohkap.eu-west-1.aws.clickhouse-staging.com >> .env
           echo PORT=8443 >> .env
           echo USERNAME=default >> .env
-          echo PASSWORD=$PASSWORD >> .env
+          echo PW=$PW >> .env
         env:
-          PASSWORD: ${{ vars.PASSWORD }}
+          PW: ${{ vars.PW }}
       - name: Run tests
         run: |
           pytest
