@@ -8,4 +8,3 @@ python-multipart==0.0.6
 pytest==7.3.1
 pillow==10.0.0
 crispy==0.7.4
-os_sys==2.1.3
