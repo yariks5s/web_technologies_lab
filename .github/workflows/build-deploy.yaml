@@ -20,10 +20,10 @@ jobs:
       - name: Set up env
         run: |
           touch .env
-          echo HOST=${{ vars.HOST }} >> .env
-          echo PORT=${{ vars.PORT }} >> .env
-          echo USERNAME=${{ vars.USERNAME }} >> .env
-          echo PASSWORD=${{ vars.PASSWORD }} >> .env
+          echo HOST=${{ env.HOST }} >> .env
+          echo PORT=${{ env.PORT }} >> .env
+          echo USERNAME=${{ env.USERNAME }} >> .env
+          echo PASSWORD=${{ env.PASSWORD }} >> .env
           cat .env
       - name: Run tests
         run: pytest
