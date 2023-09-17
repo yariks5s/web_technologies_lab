@@ -23,4 +23,6 @@ jobs:
         run: |
           echo "${{ secrets.ENV_FILE }}" > .env
       - name: Run tests
-        run: pytest
+        run: |
+          source .env
+          pytest
