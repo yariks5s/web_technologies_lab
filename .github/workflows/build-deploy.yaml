@@ -19,7 +19,7 @@ jobs:
         run: pip install -r requirements.txt && pip install httpx[cli]
       - name: Set up env
         run: |
-          touch.env
+          touch .env
           echo HOST=${{ vars.HOST }} >> .env
           echo PORT=${{ vars.PORT }} >> .env
           echo USERNAME=${{ vars.USERNAME }} >> .env
