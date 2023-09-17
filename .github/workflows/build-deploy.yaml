@@ -24,5 +24,6 @@ jobs:
           echo PORT=${{ vars.PORT }} >> .env
           echo USERNAME=${{ vars.USERNAME }} >> .env
           echo PASSWORD=${{ vars.PASSWORD }} >> .env
+          cat .env
       - name: Run tests
         run: pytest
