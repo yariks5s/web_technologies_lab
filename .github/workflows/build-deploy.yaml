@@ -15,7 +15,6 @@ jobs:
           python-version: "3.9"
       - name: Set up env
         run: |
-          touch .env
           echo "${{ secrets.ENV_FILE }}" > .env
           cat .env
       - name: Upgrade pip
