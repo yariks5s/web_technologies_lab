@@ -14,12 +14,13 @@ jobs:
         with:
           python-version: "3.9"
       - name: Upgrade pip
-        run: |
-          python -m pip install --upgrade pip
-          echo ${{ secrets.ENV_FILE }}
+        run: python -m pip install --upgrade pip
       - name: Install requirements
-        run: pip install -r requirements.txt && pip install httpx[cli]
-      - name: Run tests
+        run: pip install -r requirements.txt
+      - name: Install httpx
+        run: pip install httpx[cli]
+      - name: Create .env file
         run: |
           echo "${{ secrets.ENV_FILE }}" > .env
-          pytest
+      - name: Run tests
+        run: pytest
