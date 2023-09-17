@@ -22,6 +22,8 @@ jobs:
       - name: Create .env file
         run: |
           echo ${{ secrets.ENV_HOST }} >> .env
+          echo ${{ HOST }}
+          echo ${{ vars.HOST }}
       - name: Run tests
         run: |
           echo ${{ secrets.ENV_HOST }} >> .env
