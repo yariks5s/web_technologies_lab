@@ -1,13 +1,10 @@
 name: CI
 
 on:
-  workflow_dispatch:
+  push:
 env:
   PW: ${{ vars.PW }}
 
-on:
-  push:
-  
 jobs:
   build:
     runs-on: ubuntu-latest
