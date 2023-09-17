@@ -21,11 +21,10 @@ jobs:
         run: pip install httpx[cli]
       - name: Create .env file
         run: |
-          echo PASSWORD=OBm3nF6p.pA_k
           echo HOST=v1bf2ohkap.eu-west-1.aws.clickhouse-staging.com >> .env
           echo PORT=8443 >> .env
           echo USERNAME=default >> .env
-          echo PASSWORD=OBm3nF6p.pA_k >> .env
+          echo ${{ secrets.ENV_PASSWORD }} >> .env
       - name: Run tests
         run: |
           echo ${{ secrets.ENV_HOST }} >> .env
