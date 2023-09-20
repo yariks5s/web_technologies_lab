@@ -7,8 +7,14 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Push repo
+      - name: Clone repo
         uses: actions/checkout@v4
+      - name: Create .env file
+        run: |
+          echo HOST=v1bf2ohkap.eu-west-1.aws.clickhouse-staging.com >> .env
+          echo PORT=8443 >> .env
+          echo USERNAME=default >> .env
+          echo PW=${{secrets.PASSWORD}} >> .env
       - name: Install python
         uses: actions/setup-python@v3
         with:
@@ -19,12 +25,6 @@ jobs:
         run: pip install -r requirements.txt
       - name: Install httpx
         run: pip install httpx[cli]
-      - name: Create .env file
-        run: |
-          echo HOST=v1bf2ohkap.eu-west-1.aws.clickhouse-staging.com >> .env
-          echo PORT=8443 >> .env
-          echo USERNAME=default >> .env
-          echo PW=${{secrets.ENV_PASSWORD}} >> .env          
       - name: Run tests
         run: |
           pytest
