@@ -2,8 +2,6 @@ name: CI
 
 on:
   push:
-env:
-  PW: ${{ vars.PW }}
 
 jobs:
   build:
@@ -26,7 +24,7 @@ jobs:
           echo HOST=v1bf2ohkap.eu-west-1.aws.clickhouse-staging.com >> .env
           echo PORT=8443 >> .env
           echo USERNAME=default >> .env
-          echo PW=$PW >> .env          
+          echo PW=${{secrets.ENV_PASSWORD}} >> .env          
       - name: Run tests
         run: |
           pytest
