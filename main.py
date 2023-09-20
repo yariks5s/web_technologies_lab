@@ -3,14 +3,9 @@ from fastapi import FastAPI, Request, File, UploadFile, Form, Path
 # from PIL import Image
 import base64
 from fastapi.templating import Jinja2Templates
-from router import router as users_router
-from fastapi.responses import JSONResponse
 # from database import con, create_db, users, books, chapters, authors
-from forms import NewsForm
 from models import CATEGORIES
 from fastapi.staticfiles import StaticFiles
-from PIL import Image
-from io import BytesIO
 
 app = FastAPI()
 
@@ -46,17 +41,15 @@ async def get_index(request: Request):
         }
         i += 6
 
-    print(news_dict)
-    for id, news in news_dict.items():
-        print(news['title'])
-
     context = {"news_dict": news_dict}
     return templates.TemplateResponse("index.html", {"request": request, **context})
 
 #region OPERATIONS ON NEWS
 @app.get('/get_news/{id}')
 async def get_news(request: Request, id: str):
-    print(id)
+    availability = client.command(f'SELECT count(*) FROM CATEGORIES WHERE id=\'{id}\';')
+    if (availability == 0):
+        return {"message": "Something went wrong"}
     data = client.command(f'SELECT *, id FROM NEWS WHERE id=\'{id}\';')
     news_dict = {}
     i = 0
@@ -70,7 +63,6 @@ async def get_news(request: Request, id: str):
             'photo': data[i + 5]
         }
         i += 6
-    print(news_dict)
 
     context = {"news_dict": news_dict}
     return templates.TemplateResponse("news_get_form.html", {"request": request, **context})
@@ -178,6 +170,24 @@ async def delete_author(author_id: int):
 #endregion
 
 #region OPERATIONS ON CATEGORIES
+@app.get('/get_categories/{id}')
+async def get_news(request: Request, id: str):
+    availability = client.command(f'SELECT count(*) FROM CATEGORIES WHERE id=\'{id}\';')
+    if (availability == 0):
+        return {"message": "Something went wrong"}
+    data = client.command(f'SELECT *, id FROM CATEGORIES WHERE id=\'{id}\';')
+    categories_dict = {}
+    i = 0
+    while i < len(data) - 1:
+        categories_dict[data[i]] = {
+            'id': data[i],
+            'name': data[i + 1],
+        }
+        i += 2
+
+    context = {"categories_dict": categories_dict}
+    return templates.TemplateResponse("categories_get_form.html", {"request": request, **context})
+
 @app.get("/add_categories/")
 async def add_news(request: Request):
     return templates.TemplateResponse("categories_create_form.html", {"request": request})
