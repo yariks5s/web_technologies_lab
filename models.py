@@ -26,6 +26,11 @@ def model_queries(client):
                                name Nullable(String))
                     engine=MergeTree 
                     order by id;''')
+    client.command('''CREATE TABLE IF NOT EXISTS
+                    CHART_DATA(id String PRIMARY KEY,
+                               data String)
+                    engine=MergeTree
+                    order by id;''')
 
 class CATEGORIES(BaseModel):
     id: str

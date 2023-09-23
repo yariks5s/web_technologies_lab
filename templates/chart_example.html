@@ -1,0 +1,29 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Chart.js Example</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.8.0/chart.min.js"></script>
+</head>
+<body>
+    {% for id, data in data_dict.items() %} {{ data }} {% endfor %}
+    <canvas id="myChart"></canvas>
+
+    <script>
+        const ctx = document.getElementById('myChart').getContext('2d');
+
+        const chart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: [{% for id, data in data_dict.items() %} {{ data['data'] }}, {% endfor %}],
+            datasets: [{
+            label: 'Sales',
+            data: [{% for id, data in data_dict.items() %} Number({{ data['data'] }}), {% endfor %}],
+            backgroundColor: ["red", "blue", "green", "blue", "red", "blue"]
+            }]
+        }
+        });
+    </script>
+</body>
+</html>
