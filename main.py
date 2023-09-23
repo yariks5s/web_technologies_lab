@@ -1,11 +1,15 @@
 from database import startup
 from fastapi import FastAPI, Request, File, UploadFile, Form, Path
 # from PIL import Image
-import base64
 from fastapi.templating import Jinja2Templates
 # from database import con, create_db, users, books, chapters, authors
 from models import CATEGORIES
 from fastapi.staticfiles import StaticFiles
+import os
+from helper import add_to_dict
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = FastAPI()
 
@@ -16,7 +20,7 @@ app.mount("/static", StaticFiles(directory="templates/static"), name="static")
 async def database(**kwargs):
     global client
     client = startup()
-    client.command('INSERT INTO NEWS VALUES (\'1\', \'John killed mother\', \'Wow, this is ridiculous\', 1, 1, \'static/img/default_user.png\');')
+    client.command('INSERT INTO NEWS VALUES (\'1\', \'John killed mother\', \'Wow, this is ridiculous\', 1, 1, \'static/img/default_user.png\', \'52.3676\', \'4.9041\');')
     client.command('INSERT INTO AUTHOR VALUES (\'1\', \'John\', 55, \'john@email.com\');')
     client.command('INSERT INTO CATEGORIES VALUES (\'1\', \'Category 1\');')
  
@@ -28,43 +32,23 @@ async def is_up():
 async def get_index(request: Request):
 
     data = client.command('SELECT *, id FROM NEWS ORDER BY id;')
-    news_dict = {}
-
-    i = 0
-    while i < len(data) - 5:
-        news_dict[data[i]] = {
-            'title': data[i + 1],
-            'description': data[i + 2],
-            'category_id': data[i + 3],
-            'author_id': data[i + 4],
-            'photo': data[i + 5]
-        }
-        i += 6
+    news_dict = add_to_dict(data)
 
     context = {"news_dict": news_dict}
+    print(news_dict)
     return templates.TemplateResponse("index.html", {"request": request, **context})
 
 #region OPERATIONS ON NEWS
 @app.get('/get_news/{id}')
 async def get_news(request: Request, id: str):
-    availability = client.command(f'SELECT count(*) FROM CATEGORIES WHERE id=\'{id}\';')
+    availability = client.command(f'SELECT count(*) FROM NEWS WHERE id=\'{id}\';')
     if (availability == 0):
         return {"message": "Something went wrong"}
     data = client.command(f'SELECT *, id FROM NEWS WHERE id=\'{id}\';')
-    news_dict = {}
-    i = 0
-    while i < len(data) - 5:
-        news_dict[data[i]] = {
-            'id': data[i],
-            'title': data[i + 1],
-            'description': data[i + 2],
-            'category_id': data[i + 3],
-            'author_id': data[i + 4],
-            'photo': data[i + 5]
-        }
-        i += 6
+    news_dict = add_to_dict(data)
 
     context = {"news_dict": news_dict}
+    print(news_dict)
     return templates.TemplateResponse("news_get_form.html", {"request": request, **context})
 
 @app.get("/add_news/")
@@ -72,11 +56,11 @@ async def add_news(request: Request):
     return templates.TemplateResponse("news_create_form.html", {"request": request})
 
 @app.post("/create_news/")
-async def submit_form(id: str = Form('id'), title: str = Form('title'), description: str = Form('description'), category_id: str = Form('category_id'), author_id: str = Form('author_id')):
+async def submit_form(id: str = Form('id'), title: str = Form('title'), description: str = Form('description'), category_id: str = Form('category_id'), author_id: str = Form('author_id'), coord_lat: str = Form('coord_lat'), coord_lon: str = Form('coord_lon')):
 
     photo_bytes = "static/img/default_user.png"
 
-    client.command(f'INSERT INTO NEWS VALUES (\'{id}\', \'{title}\', \'{description}\', \'{category_id}\', \'{author_id}\', \'{photo_bytes}\');')
+    client.command(f'INSERT INTO NEWS VALUES (\'{id}\', \'{title}\', \'{description}\', \'{category_id}\', \'{author_id}\', \'{photo_bytes}\', \'{coord_lat}\', \'{coord_lon}\');')
     # Create a news instance.
 
     # Return the ID of the newly created news instance.
@@ -86,28 +70,16 @@ async def submit_form(id: str = Form('id'), title: str = Form('title'), descript
 async def add_news(request: Request, id: int):
     print(id)
     data = client.command(f'SELECT *, id FROM NEWS WHERE id={id};')
-    news_dict = {}
-    i = 0
-    while i < len(data) - 5:
-        news_dict[data[i]] = {
-            'id': data[i],
-            'title': data[i + 1],
-            'description': data[i + 2],
-            'category_id': data[i + 3],
-            'author_id': data[i + 4],
-            'photo': data[i + 5]
-        }
-        i += 6
-    print(news_dict)
+    news_dict = add_to_dict(data)
 
     context = {"news_dict": news_dict}
     return templates.TemplateResponse("news_alter_form.html", {"request": request, **context})
 
 @app.post("/create_news/{news_id}")
-async def submit_form(news_id: int, title: str = Form('title'), description: str = Form('description'), category_id: str = Form('category_id'), author_id: str = Form('author_id'), photo: str = Form('photo')):
+async def submit_form(news_id: int, title: str = Form('title'), description: str = Form('description'), category_id: str = Form('category_id'), author_id: str = Form('author_id'), photo: str = Form('photo'), coord_lat: str = Form('coord_lat'), coord_lon: str = Form('coord_lon')):
 
     # Create a news instance.
-    client.command(f'ALTER TABLE NEWS UPDATE title=\'{title}\', description=\'{description}\', category_id=\'{category_id}\', author_id=\'{author_id}\', photo=\'{photo}\' WHERE id={news_id};')
+    client.command(f'ALTER TABLE NEWS UPDATE title=\'{title}\', description=\'{description}\', category_id=\'{category_id}\', author_id=\'{author_id}\', photo=\'{photo}\', coord_lat=\'{coord_lat}\', coord_lon=\'{coord_lon}\' WHERE id={news_id};')
 
     # Return the ID of the newly created news instance.
     return {"message": "Form submitted successfully."}

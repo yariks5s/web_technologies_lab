@@ -163,7 +163,7 @@
         <div class="row">
             {% for id, news in news_dict.items() %}
             <div class="col-sm-4" data-animate-effect="fadeIn">
-                <a href="/get_news/{{id}}">
+                <a href="/get_news/{{ news['id'] }}">
                     <div class="bordery">
                         <img src="{{ news['photo'] }}" alt="" height="50" width="60">
                         <i class="fa fa-server text-gr bfont" aria-hidden="true"></i> <b>{{ news['title'] }}</b>
