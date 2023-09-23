@@ -20,7 +20,7 @@ app.mount("/static", StaticFiles(directory="templates/static"), name="static")
 async def database(**kwargs):
     global client
     client = startup()
-    client.command('INSERT INTO NEWS VALUES (\'1\', \'John killed mother\', \'Wow, this is ridiculous\', 1, 1, \'static/img/default_user.png\', \'52.3676\', \'4.9041\');')
+    # client.command('INSERT INTO NEWS VALUES (\'1\', \'John killed mother\', \'Wow, this is ridiculous\', 1, 1, \'static/img/default_user.png\', \'52.3676\', \'4.9041\');')
     client.command('INSERT INTO AUTHOR VALUES (\'1\', \'John\', 55, \'john@email.com\');')
     client.command('INSERT INTO CATEGORIES VALUES (\'1\', \'Category 1\');')
  
