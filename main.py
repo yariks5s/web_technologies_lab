@@ -23,6 +23,7 @@ async def database(**kwargs):
     # client.command('INSERT INTO NEWS VALUES (\'1\', \'John killed mother\', \'Wow, this is ridiculous\', 1, 1, \'static/img/default_user.png\', \'52.3676\', \'4.9041\');')
     client.command('INSERT INTO AUTHOR VALUES (\'1\', \'John\', 55, \'john@email.com\');')
     client.command('INSERT INTO CATEGORIES VALUES (\'1\', \'Category 1\');')
+    client.command('INSERT INTO CHART_DATA VALUES (\'1\', \'5\'), (\'2\', \'2\');')
  
 @app.get('/is_up/')
 async def is_up():
@@ -229,3 +230,20 @@ async def delete_categories(categories: CATEGORIES):
         return {"message": "FATAL"}
 
 #endregion
+
+@app.get("/chart")
+async def chart(request: Request):
+    availability = client.command(f'SELECT count(*) FROM CHART_DATA;')
+    if (availability == 0):
+        return {"message": "Something went wrong"}
+    data = client.command(f'SELECT *, id FROM CHART_DATA;')
+    data_dict = {}
+    i = 0
+    while i < len(data) - 1:
+        data_dict[data[i]] = {
+            'id': data[i][-(len(data[i])-2)//2:],
+            'data': data[i + 1],
+        }
+        i += 2
+    context = {"data_dict": data_dict}
+    return templates.TemplateResponse("chart_example.html", {"request": request, **context})

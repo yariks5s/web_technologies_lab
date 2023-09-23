@@ -48,3 +48,6 @@ Test file is `end2end_test.py` There I was testing creating and deleting random 
 
 - TASK C8. (3 бали) Інтеграція зі сторонніми API. Скористатись стороннім API. 
 I used gmaps api, when I open the details of news, I can see the map where it was.
+
+- TASK F1. (2 бали) Візуалізація статистики.
+I used ChartJS, its located on /chart [i took some random data and I also can append data to chart from db console]
