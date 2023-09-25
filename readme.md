@@ -51,3 +51,6 @@ I used gmaps api, when I open the details of news, I can see the map where it wa
 
 - TASK F1. (2 бали) Візуалізація статистики.
 I used ChartJS, its located on /chart [i took some random data and I also can append data to chart from db console]
+
+- F6. (4 бали) Графіка. 
+I used js canvas to create a game. to open a game, right click on the html file and open file in browser
