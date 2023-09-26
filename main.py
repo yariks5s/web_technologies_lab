@@ -1,4 +1,3 @@
-from django.http import JsonResponse
 from elasticsearch import Elasticsearch
 from database import startup
 from fastapi import FastAPI, Request, File, UploadFile, Form, Path, Query, Depends, status
