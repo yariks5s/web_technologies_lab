@@ -1,13 +1,20 @@
 from database import startup
-from fastapi import FastAPI, Request, File, UploadFile, Form, Path, Query, Depends, status
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from typing import Callable, Optional
-from fastapi.templating import Jinja2Templates
-from models import CATEGORIES
-from fastapi.staticfiles import StaticFiles
-import os
 from helper import add_to_dict
 from dotenv import load_dotenv
+
+from fastapi import FastAPI, Request, File, UploadFile, Form, Path, Query, Depends, status
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
+
+from typing import Callable, Optional
+from models import CATEGORIES
+import os
+
+from whoosh.index import create_in, open_dir
+from whoosh.fields import *
+from whoosh.qparser import QueryParser, MultifieldParser
+from whoosh import index
 
 load_dotenv()
 
@@ -252,14 +259,6 @@ async def chart(request: Request):
         i += 2
     context = {"data_dict": data_dict}
     return templates.TemplateResponse("chart_example.html", {"request": request, **context})
-
-from whoosh.index import create_in
-from whoosh.index import open_dir
-from whoosh.fields import *
-from whoosh.qparser import QueryParser
-from whoosh.qparser import MultifieldParser
-from whoosh.query import Every
-from whoosh import index
 
 @app.get("/search")
 async def search(request: Request, name: str = Form('name')):

@@ -54,3 +54,6 @@ I used ChartJS, its located on /chart [i took some random data and I also can ap
 
 - F6. (4 бали) Графіка. 
 I used js canvas to create a game. to open a game, right click on the html file and open file in browser
+
+- B4 (3 бали) Пошук.
+To search something in news, we can go to /search and put some words there. Search engine is Whoosh.
