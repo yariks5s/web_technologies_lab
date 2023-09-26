@@ -1,4 +1,3 @@
-from elasticsearch import Elasticsearch
 from database import startup
 from fastapi import FastAPI, Request, File, UploadFile, Form, Path, Query, Depends, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
