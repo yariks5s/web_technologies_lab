@@ -25,7 +25,7 @@ app.mount("/static", StaticFiles(directory="templates/static"), name="static")
 async def database(**kwargs):
     global client
     client = startup()
-    # client.command('INSERT INTO NEWS VALUES (\'1\', \'John stole an apple\', \'Wow, this is ridiculous\', 1, 1, \'static/img/default_user.png\', \'52.3676\', \'4.9041\');')
+    client.command('INSERT INTO NEWS VALUES (\'1\', \'John stole an apple\', \'Wow, this is ridiculous\', 1, 1, \'static/img/default_user.png\', \'52.3676\', \'4.9041\');')
     client.command('INSERT INTO AUTHOR VALUES (\'1\', \'John\', 55, \'john@email.com\');')
     client.command('INSERT INTO CATEGORIES VALUES (\'1\', \'Category 1\');')
     client.command('INSERT INTO CHART_DATA VALUES (\'1\', \'5\'), (\'2\', \'2\');')
@@ -288,31 +288,22 @@ async def results(request: Request, name: str = Form('name')):
 
     ix = index.create_in("indexdir", schema)
     print(content)
+    print(title)
     
     writer = ix.writer()
-    writer.add_document(title=title, content=content,
-                        path=u"/a")
-    writer.add_document(title=u"Second try", content=u"This is the second example hello world.",
-                        path=u"/b")
-    writer.add_document(title=u"Third time's the charm", content=u"More examples. Examples are many.",
-                        path=u"/c")
+    for id, item in news_dict.items():
+        print(item)
+        writer.add_document(title=item['title'], content=item['description'],
+                            path=item['id'])
     writer.commit()
-    with ix.searcher() as searcher:
-        print(name)
-        query = QueryParser("content", ix.schema).parse(name)
-        results = searcher.search(query, terms=True)
-        print(results)
-        
-        for r in results:
-            print (r, r.score)
-            # Was this results object created with terms=True?
-            if results.has_matched_terms():
-                # What terms matched in the results?
-                print(results.matched_terms())
-            
-        # What terms matched in each hit?
-        print ("matched terms")
-        for hit in results:
-            print(hit.matched_terms())
+    qp = QueryParser("content", schema=ix.schema)
+    q = qp.parse(name)
 
-        # return templates.TemplateResponse("search_form.html", {"request": request, **context})
+    with ix.searcher() as s:
+        results = s.search(q)
+
+        for hit in results:
+            print(hit.items())
+        context = {"results": results}
+
+        return templates.TemplateResponse("search_form.html", {"request": request, **context})

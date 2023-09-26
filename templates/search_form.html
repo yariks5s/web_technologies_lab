@@ -11,8 +11,10 @@
         <input type="text" name="name" required><br><br>
         <input type="submit" value="Submit">
     </form>
-    {% if res %}
-    <h3>{{ res }}</h3>
-    {% endif %}
+    {% for res in results %}
+        {% if res %}
+            <h3>{{ res }}</h3>
+        {% endif %}
+    {% endfor %}
 </body>
 </html>
