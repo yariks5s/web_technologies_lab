@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Search Results</title>
+</head>
+<body>
+    <h1>Search Results</h1>
+
+    <form action="/search" enctype="multipart/form-data" method="POST">
+        <label for="name">Book name:</label>
+        <input type="text" name="name" required><br><br>
+        <input type="submit" value="Submit">
+    </form>
+    {% if res %}
+    <h3>{{ res }}</h3>
+    {% endif %}
+</body>
+</html>
