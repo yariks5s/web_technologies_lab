@@ -1,8 +1,8 @@
 from database import startup
-from fastapi import FastAPI, Request, File, UploadFile, Form, Path
-# from PIL import Image
+from fastapi import FastAPI, Request, File, UploadFile, Form, Path, Query, Depends, status
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from typing import Callable, Optional
 from fastapi.templating import Jinja2Templates
-# from database import con, create_db, users, books, chapters, authors
 from models import CATEGORIES
 from fastapi.staticfiles import StaticFiles
 import os
@@ -12,6 +12,11 @@ from dotenv import load_dotenv
 load_dotenv()
 
 app = FastAPI()
+ELASTIC_QUERY_MAX_SIZE = 15
+
+SECRET_KEY = "c90bacd9ba5d2bd54589318dddb1326883c16341e3badde22bb6e4f21f695d70"
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 templates = Jinja2Templates(directory="templates")
 app.mount("/static", StaticFiles(directory="templates/static"), name="static")
@@ -20,7 +25,7 @@ app.mount("/static", StaticFiles(directory="templates/static"), name="static")
 async def database(**kwargs):
     global client
     client = startup()
-    # client.command('INSERT INTO NEWS VALUES (\'1\', \'John killed mother\', \'Wow, this is ridiculous\', 1, 1, \'static/img/default_user.png\', \'52.3676\', \'4.9041\');')
+    client.command('INSERT INTO NEWS VALUES (\'1\', \'John stole an apple\', \'Wow, this is ridiculous\', 1, 1, \'static/img/default_user.png\', \'52.3676\', \'4.9041\');')
     client.command('INSERT INTO AUTHOR VALUES (\'1\', \'John\', 55, \'john@email.com\');')
     client.command('INSERT INTO CATEGORIES VALUES (\'1\', \'Category 1\');')
     client.command('INSERT INTO CHART_DATA VALUES (\'1\', \'5\'), (\'2\', \'2\');')
@@ -48,7 +53,7 @@ async def get_news(request: Request, id: str):
     data = client.command(f'SELECT *, id FROM NEWS WHERE id=\'{id}\';')
     news_dict = add_to_dict(data)
 
-    context = {"news_dict": news_dict}
+    context = {"news_dict": news_dict, "api_key": os.environ['MAPS_API_KEY']}
     print(news_dict)
     return templates.TemplateResponse("news_get_form.html", {"request": request, **context})
 
@@ -247,3 +252,58 @@ async def chart(request: Request):
         i += 2
     context = {"data_dict": data_dict}
     return templates.TemplateResponse("chart_example.html", {"request": request, **context})
+
+from whoosh.index import create_in
+from whoosh.index import open_dir
+from whoosh.fields import *
+from whoosh.qparser import QueryParser
+from whoosh.qparser import MultifieldParser
+from whoosh.query import Every
+from whoosh import index
+
+@app.get("/search")
+async def search(request: Request, name: str = Form('name')):
+    return templates.TemplateResponse("search_form.html", {"request": request})
+
+@app.post("/search")
+async def results(request: Request, name: str = Form('name')):
+    # schema = Schema(path=ID(stored=True, unique=True), content=TEXT, doc=STORED, title=TEXT)
+
+    # writer = ix.writer()
+    data = client.command('SELECT *, id FROM NEWS ORDER BY id;')
+    news_dict = add_to_dict(data)
+    print(news_dict['1']['description'])
+    content=news_dict['1']['description']
+    myid=news_dict['1']['id']
+    title=news_dict['1']['title']
+
+    schema = Schema(title=TEXT(stored=True), path=ID(stored=True), content=TEXT(stored = True))
+ 
+    try:
+        os.mkdir('indexdir')
+        ix = create_in("indexdir", schema)
+    except:
+        print("indexdir already exists")
+        ix = open_dir('indexdir')
+
+    ix = index.create_in("indexdir", schema)
+    print(content)
+    print(title)
+    
+    writer = ix.writer()
+    for id, item in news_dict.items():
+        print(item)
+        writer.add_document(title=item['title'], content=item['description'],
+                            path=item['id'])
+    writer.commit()
+    qp = QueryParser("content", schema=ix.schema)
+    q = qp.parse(name)
+
+    with ix.searcher() as s:
+        results = s.search(q)
+
+        for hit in results:
+            print(hit.items())
+        context = {"results": results}
+
+        return templates.TemplateResponse("search_form.html", {"request": request, **context})
