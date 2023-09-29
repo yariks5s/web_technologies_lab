@@ -1,14 +1,18 @@
+import base64
+
+from fastapi.responses import HTMLResponse
 from database import startup
 from helper import add_to_dict
 from dotenv import load_dotenv
 
-from fastapi import FastAPI, Request, File, UploadFile, Form, Path, Query, Depends, status
+from fastapi import FastAPI, Request, File, Response, UploadFile, Form, Path, Query, Depends, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 
 from typing import Callable, Optional
 from models import CATEGORIES
+import boto3
 import os
 
 from whoosh.index import create_in, open_dir
@@ -306,3 +310,13 @@ async def results(request: Request, name: str = Form('name')):
         context = {"results": results}
 
         return templates.TemplateResponse("search_form.html", {"request": request, **context})
+    
+@app.get("/s3_storage_image/{filename}")
+async def s3_storage(request: Request, filename: str):
+    s3 = boto3.client('s3')
+    response = s3.get_object(Bucket='yariksbucket', Key=filename)
+    data = response['Body'].read()
+    base64_data = base64.b64encode(data).decode("utf-8")
+    context = {"photo": base64_data}
+
+    return templates.TemplateResponse("photo.html", {"request": request, **context})
