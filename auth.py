@@ -39,7 +39,7 @@ def authenticate_user(username: str, password: str, client):
             'id': data[i],
             'username': data[i + 1],
             'password': data[i + 2],
-            'is_admin': data[i + 3],
+            'is_admin': data[i + 3][0],
         }
         i += 4
     if not bcrypt_context.verify(password, list(users_dict.values())[0]['password']):
@@ -47,12 +47,12 @@ def authenticate_user(username: str, password: str, client):
     return list(users_dict.values())[0]
 
 def create_access_token(username: str, is_admin: str, expires_delta: timedelta):
-    encode = {'sub': username, 'bool': is_admin}
+    encode = {'sub': username, 'bool': is_admin[0]}
     expires = datetime.utcnow() + expires_delta
     encode.update({'exp': expires})
     return jwt.encode(encode, SECRET_KEY, algorithm=ALGORITHM)
 
-async def get_current_user(token: str):
+async def get_current_user(token: Annotated[str, Depends(oauth2_bearer)]):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         print(payload)
@@ -67,12 +67,3 @@ async def get_current_user(token: str):
     except JWTError:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                             detail='Could not validate user.')
-
-# @router.post("/auth", status_code=status.HTTP_201_CREATED)
-# async def create_user(create_user_request: CreateUserRequest):
-#     create_user_model = Users(
-#         username=create_user_request.username,
-#         hashed_password=bcrypt_context.hash(create_user_request.password)
-#     )
-
-#     client.command(f'INSERT INTO USERS VALUES (\'{create_user_request.username}\', \'{bcrypt_context.hash(create_user_request.password)}\');')

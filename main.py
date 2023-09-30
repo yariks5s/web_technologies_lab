@@ -23,6 +23,7 @@ from whoosh import index
 from auth import CreateUserRequest, bcrypt_context, Token, authenticate_user, timedelta, create_access_token, get_current_user
 
 load_dotenv()
+user_dependency = Annotated[dict, Depends(get_current_user)]
 
 app = FastAPI()
 
@@ -326,24 +327,21 @@ async def create_user(create_user_request: CreateUserRequest):
     client.command(f'INSERT INTO USERS VALUES (\'{create_user_request.id}\', \'{create_user_request.username}\', \'{bcrypt_context.hash(create_user_request.password)}\', \'{create_user_request.is_admin}\');')
     return {"message": "OK"}
 
-@app.post("/token")
+@app.post("/auth/token")
 async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
+    print(form_data.__str__)
     user = authenticate_user(form_data.username, form_data.password, client)
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                             detail='Could not validate user.')
     token = create_access_token(user['username'], user['is_admin'], timedelta(minutes=20))
 
-    # return token
+    # return token    
+    return {'access_token': token, 'token_type': 'bearer'}
 
-    user = await get_current_user(token)
+@app.get("/check_admin")
+async def admin(user: user_dependency):
+    print(user)
     if user is None:
         raise HTTPException(status_code=401, detail='Authentication failed.')
-    return {"User": user}
-
-# @app.get("/get_user")
-# async def user(token: str):
-#     user = get_current_user(token)
-#     if user is None:
-#         raise HTTPException(status_code=401, detail='Authentication failed.')
-#     return {"User": user}
+    return {"go ": "away"}

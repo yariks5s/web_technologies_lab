@@ -12,4 +12,6 @@ whoosh
 boto3
 passlib
 python-multipart
-jose
+python-jose[cryptography]
+dependency-injector
+redis
