@@ -60,3 +60,8 @@ To search something in news, we can go to /search and put some words there. Sear
 
 - TASK C19 (3 бали) Статичний контент.
 I put some files and images on s3 bucket, and we can access it just by typing `/s3_storage_image/{filename}`
+
+- TASK B1. (2 бали) Pagination API. - below
+
+- TASK F5. (3 бали) SPA.
+I have an another directory SPA. We can use script to startup it (only locally) and go to localhost:3002 to see the site with pagination

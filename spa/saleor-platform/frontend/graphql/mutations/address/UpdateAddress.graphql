@@ -1,0 +1,10 @@
+mutation UpdateAdress($id: ID!, $input: AddressInput!){
+    accountAddressUpdate(id: $id, input: $input){
+      user{
+        id
+        addresses {
+          ...AddressFragment
+      }
+    }
+    }
+  }

@@ -1,0 +1,39 @@
+query latestProduct($first: Int, $last: Int, $after: String, $before: String){
+    products(
+      first: $first,
+      last: $last,
+      after: $after,
+      before: $before,
+      channel: "default-channel")
+    {
+      edges{
+        node{
+          id,
+          name
+          thumbnail{
+            url
+          }
+          pricing{
+            priceRange{
+              stop{
+                gross{
+                  amount
+                  currency
+                }
+              }
+            }
+          }
+          description
+          defaultVariant{
+            id
+          }
+        }
+      }
+      pageInfo{
+        hasNextPage
+        hasPreviousPage
+        startCursor
+        endCursor
+      }
+    }
+  }

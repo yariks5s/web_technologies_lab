@@ -1,0 +1,36 @@
+query GetUser{
+    me{
+      id
+      email
+      firstName
+      lastName
+      checkout{
+        ...CheckoutFragment
+      }
+      addresses {
+          ...AddressFragment
+      }
+    defaultShippingAddress{
+          ...AddressFragment
+    }
+    orders(first: 10) {
+    edges {
+      node {
+        isPaid
+        lines {
+          productVariantId
+          quantity
+          productName
+          totalPrice {
+            currency
+            gross {
+              amount
+            }
+          }
+        }
+        created
+      }
+    }
+  }
+    }
+  }
