@@ -10,3 +10,8 @@ pillow==10.0.0
 crispy==0.7.4
 whoosh
 boto3
+passlib
+python-multipart
+python-jose[cryptography]
+dependency-injector
+redis
