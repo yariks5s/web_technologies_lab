@@ -31,6 +31,12 @@ def model_queries(client):
                                data String)
                     engine=MergeTree
                     order by id;''')
+    client.command('''CREATE TABLE IF NOT EXISTS
+                    USERS(id String PRIMARY KEY,
+                            username String,
+                            password String)
+                    engine=MergeTree
+                    order by id;''')
 
 class CATEGORIES(BaseModel):
     id: str

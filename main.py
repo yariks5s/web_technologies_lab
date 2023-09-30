@@ -5,12 +5,12 @@ from database import startup
 from helper import add_to_dict
 from dotenv import load_dotenv
 
-from fastapi import FastAPI, Request, File, Response, UploadFile, Form, Path, Query, Depends, status
+from fastapi import FastAPI, HTTPException, Request, File, Response, UploadFile, Form, Path, Query, Depends, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 
-from typing import Callable, Optional
+from typing import Callable, Optional, Annotated
 from models import CATEGORIES
 import boto3
 import os
@@ -20,13 +20,12 @@ from whoosh.fields import *
 from whoosh.qparser import QueryParser, MultifieldParser
 from whoosh import index
 
+from auth import CreateUserRequest, bcrypt_context, Token, authenticate_user, timedelta, create_access_token, get_current_user
+
 load_dotenv()
 
 app = FastAPI()
-ELASTIC_QUERY_MAX_SIZE = 15
 
-SECRET_KEY = "c90bacd9ba5d2bd54589318dddb1326883c16341e3badde22bb6e4f21f695d70"
-ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 templates = Jinja2Templates(directory="templates")
@@ -320,3 +319,31 @@ async def s3_storage(request: Request, filename: str):
     context = {"photo": base64_data}
 
     return templates.TemplateResponse("photo.html", {"request": request, **context})
+
+@app.post("/auth")
+async def create_user(create_user_request: CreateUserRequest):
+
+    client.command(f'INSERT INTO USERS VALUES (\'{create_user_request.id}\', \'{create_user_request.username}\', \'{bcrypt_context.hash(create_user_request.password)}\');')
+    return {"message": "OK"}
+
+@app.post("/token")
+async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
+    user = authenticate_user(form_data.username, form_data.password, client)
+    if not user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                            detail='Could not validate user.')
+    token = create_access_token(user['username'], timedelta(minutes=20))
+
+    # return token
+
+    user = await get_current_user(token)
+    if user is None:
+        raise HTTPException(status_code=401, detail='Authentication failed.')
+    return {"User": user}
+
+# @app.get("/get_user")
+# async def user(token: str):
+#     user = get_current_user(token)
+#     if user is None:
+#         raise HTTPException(status_code=401, detail='Authentication failed.')
+#     return {"User": user}
