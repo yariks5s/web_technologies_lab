@@ -22,6 +22,7 @@ class CreateUserRequest(BaseModel):
     id: str
     username: str
     password: str
+    is_admin: str
 
 class Token(BaseModel):
     access_token: str
@@ -33,20 +34,20 @@ def authenticate_user(username: str, password: str, client):
         return False
     users_dict = {}
     i = 0
-    while i < len(data) - 2:
+    while i < len(data) - 3:
         users_dict[data[i]] = {
             'id': data[i],
             'username': data[i + 1],
             'password': data[i + 2],
+            'is_admin': data[i + 3],
         }
-        i += 3
-    if not bcrypt_context.verify(password, users_dict['1']['password']):
+        i += 4
+    if not bcrypt_context.verify(password, list(users_dict.values())[0]['password']):
         return False
-    print(users_dict['1'])
-    return users_dict['1']
+    return list(users_dict.values())[0]
 
-def create_access_token(username: str, expires_delta: timedelta):
-    encode = {'sub': username}
+def create_access_token(username: str, is_admin: str, expires_delta: timedelta):
+    encode = {'sub': username, 'bool': is_admin}
     expires = datetime.utcnow() + expires_delta
     encode.update({'exp': expires})
     return jwt.encode(encode, SECRET_KEY, algorithm=ALGORITHM)
@@ -57,10 +58,12 @@ async def get_current_user(token: str):
         print(payload)
         print("--------------------------------")
         username: str = payload.get('sub')
+        is_admin: str = payload.get('bool')
         if username is None:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                                 detail='Could not validate user.')
-        return {'username': username}
+        return {'username': username,
+                'is_admin': is_admin}
     except JWTError:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                             detail='Could not validate user.')

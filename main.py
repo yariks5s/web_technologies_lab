@@ -323,7 +323,7 @@ async def s3_storage(request: Request, filename: str):
 @app.post("/auth")
 async def create_user(create_user_request: CreateUserRequest):
 
-    client.command(f'INSERT INTO USERS VALUES (\'{create_user_request.id}\', \'{create_user_request.username}\', \'{bcrypt_context.hash(create_user_request.password)}\');')
+    client.command(f'INSERT INTO USERS VALUES (\'{create_user_request.id}\', \'{create_user_request.username}\', \'{bcrypt_context.hash(create_user_request.password)}\', \'{create_user_request.is_admin}\');')
     return {"message": "OK"}
 
 @app.post("/token")
@@ -332,7 +332,7 @@ async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm,
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                             detail='Could not validate user.')
-    token = create_access_token(user['username'], timedelta(minutes=20))
+    token = create_access_token(user['username'], user['is_admin'], timedelta(minutes=20))
 
     # return token
 

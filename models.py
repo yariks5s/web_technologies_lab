@@ -34,7 +34,8 @@ def model_queries(client):
     client.command('''CREATE TABLE IF NOT EXISTS
                     USERS(id String PRIMARY KEY,
                             username String,
-                            password String)
+                            password String,
+                            is_admin String)
                     engine=MergeTree
                     order by id;''')
 
