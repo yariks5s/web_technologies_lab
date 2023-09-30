@@ -65,3 +65,6 @@ I put some files and images on s3 bucket, and we can access it just by typing `/
 
 - TASK F5. (3 бали) SPA.
 I have an another directory SPA. We can use script to startup it (only locally) and go to localhost:3002 to see the site with pagination
+
+- TASK QA3. (3 бали) Тестування процесу автентифікації/авторизації.
+All the tests are running by pytest. There we create a user and authenticate him.
