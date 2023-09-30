@@ -21,7 +21,7 @@ docker-compose up
 ```
 in the console and then go to localhost.
 
-- TASK C5 (3 бали) JSON/XML (REST) API.
+- TASK C5
 JSON file to insert into POSTMAN to add/change/delete CATEGORIES:
 ```
 {
@@ -55,8 +55,9 @@ I used ChartJS, its located on /chart [i took some random data and I also can ap
 - TASK F6. (4 бали) Графіка. 
 I used js canvas to create a game. to open a game, right click on the html file and open file in browser
 
-- TASK B4 (3 бали) Пошук.
-To search something in news, we can go to /search and put some words there. Search engine is Whoosh.
+- TASK B4. (3 бали) Пошук. - below
 
-- TASK C19 (3 бали) Статичний контент.
-I put some files and images on s3 bucket, and we can access it just by typing `/s3_storage_image/{filename}`
+- TASK B1. (2 бали) Pagination API. - below
+
+- TASK F5. (3 бали) SPA.
+I have an another directory SPA. We can use script to startup it (only locally) and go to localhost:3002 to see the site with pagination
