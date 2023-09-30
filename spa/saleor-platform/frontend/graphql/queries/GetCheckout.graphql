@@ -1,0 +1,5 @@
+query getCheckout($id: ID){
+  checkout(id: $id){
+    ...CheckoutFragment
+  }
+}

@@ -1,0 +1,14 @@
+mutation CreateAdress($input: AddressInput!){
+    accountAddressCreate(input: $input){
+      user{
+        id
+        addresses {
+            ...AddressFragment
+      }
+    }
+    errors{
+      message
+      code
+    }
+  }
+}

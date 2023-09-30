@@ -1,0 +1,7 @@
+mutation lineUpdate($checkoutId: ID, $lines: [CheckoutLineUpdateInput!]!){
+    checkoutLinesUpdate(checkoutId: $checkoutId,lines: $lines){
+      checkout{
+        ...CheckoutFragment
+    }
+  }
+}

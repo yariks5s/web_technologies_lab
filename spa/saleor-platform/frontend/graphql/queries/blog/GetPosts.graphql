@@ -1,0 +1,12 @@
+query GetPosts {
+  strapi_posts{
+    data {
+      id
+      attributes {
+        content
+        title
+        createdAt
+      }
+    }
+  }
+}
