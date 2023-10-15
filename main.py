@@ -341,7 +341,17 @@ async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm,
 
 @app.get("/check_admin")
 async def admin(user: user_dependency):
-    print(user)
     if user is None:
         raise HTTPException(status_code=401, detail='Authentication failed.')
+    if user['is_admin']:
+        return {"Success ": "you are admin"}
     return {"go ": "away"}
+
+@app.get("/add_admin")
+async def add_admin(user: user_dependency):
+    return templates.TemplateResponse("give_admin_permission.html")
+
+@app.post("/add_admin")
+async def add_admin(user: user_dependency):
+    client.command(f'ALTER TABLE USERS UPDATE is_admin=\'1\' WHERE id={user["is_admin"]};')
+
