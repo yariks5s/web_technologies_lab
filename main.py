@@ -344,8 +344,8 @@ async def admin(user: user_dependency):
     if user is None:
         raise HTTPException(status_code=401, detail='Authentication failed.')
     if user['is_admin']:
-        return {"Success ": "you are admin"}
-    return {"go ": "away"}
+        return templates.TemplateResponse("special_admin_page.html")
+    return {"Error: ": "You are not admin"}
 
 @app.get("/add_admin")
 async def add_admin(user: user_dependency):
