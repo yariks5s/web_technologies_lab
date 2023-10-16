@@ -340,16 +340,16 @@ async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm,
     return {'access_token': token, 'token_type': 'bearer'}
 
 @app.get("/check_admin")
-async def admin(user: user_dependency):
+async def admin(user: user_dependency, request: Request):
     if user is None:
         raise HTTPException(status_code=401, detail='Authentication failed.')
     if user['is_admin']:
-        return templates.TemplateResponse("special_admin_page.html", {})
+        return templates.TemplateResponse("special_admin_page.html", {"request": request})
     return {"Error: ": "You are not admin"}
 
 @app.get("/add_admin")
-async def add_admin(user: user_dependency):
-    return templates.TemplateResponse("give_admin_permission.html", {})
+async def add_admin(user: user_dependency, request: Request):
+    return templates.TemplateResponse("give_admin_permission.html", {"request": request})
 
 @app.post("/add_admin")
 async def add_admin(user: user_dependency):
