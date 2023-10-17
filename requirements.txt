@@ -16,3 +16,4 @@ python-jose[cryptography]
 dependency-injector
 redis
 fastapi-cache2
+redis-cli
