@@ -1,4 +1,5 @@
 import base64
+import time
 
 from fastapi.responses import HTMLResponse
 from database import startup
@@ -9,6 +10,12 @@ from fastapi import FastAPI, HTTPException, Request, File, Response, UploadFile,
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
+
+from fastapi_cache import FastAPICache
+from fastapi_cache.backends.redis import RedisBackend
+from fastapi_cache.decorator import cache
+
+from redis import asyncio as aioredis
 
 from typing import Callable, Optional, Annotated
 from models import CATEGORIES
@@ -40,10 +47,33 @@ async def database(**kwargs):
     client.command('INSERT INTO AUTHOR VALUES (\'1\', \'John\', 55, \'john@email.com\');')
     client.command('INSERT INTO CATEGORIES VALUES (\'1\', \'Category 1\');')
     client.command('INSERT INTO CHART_DATA VALUES (\'1\', \'5\'), (\'2\', \'2\');')
+
+    redis = await aioredis.from_url("redis://localhost", encoding="utf8", decode_responses=True)
+    FastAPICache.init(RedisBackend(redis), prefix="fastapi-cache")
+    print("keys:", await redis.acl_whoami())
  
 @app.get('/is_up/')
 async def is_up():
     return "OK"
+
+@cache()
+async def get_cache():
+    return 1
+
+def factorial(n: int) -> int:
+    time.sleep(0.1)
+    if n == 0:
+        return 1
+    else:
+        return n * factorial(n - 1)
+
+@app.get('/check_cache/')
+@cache(expire=10)
+async def check_cache():
+    time_start = time.time()
+    res = factorial(50)
+    time_gone = time.time() - time_start
+    return dict(factorial_of_50_with_sleep=res, time_spent=time_gone)
 
 @app.get('/')
 async def get_index(request: Request):

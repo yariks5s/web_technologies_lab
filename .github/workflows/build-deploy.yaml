@@ -9,6 +9,10 @@ jobs:
     steps:
       - name: Clone repo
         uses: actions/checkout@v4
+      - name: Install redis
+        run: sudo apt-get install -y redis-tools redis-server
+      - name: Verify that redis is up
+        run: redis-cli ping
       - name: Create .env file
         run: |
           echo HOST=v1bf2ohkap.eu-west-1.aws.clickhouse-staging.com >> .env
