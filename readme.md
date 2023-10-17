@@ -68,3 +68,9 @@ I have an another directory SPA. We can use script to startup it (only locally) 
 
 - TASK QA3. (3 бали) Тестування процесу автентифікації/авторизації.
 All the tests are running by pytest. There we create a user and authenticate him.
+
+- TASK B6. (3 бали) Feature flags.
+We have a function check_admin that permit specific access only for admins,.
+
+- TASK B9. (3 бали) Кешування на рівні API.
+As a cache storage I used Redis and for caching - external library called fastapi-cache2. I created a page that has a time-consumptive function and caches the result after executing. Cache lasts 15 seconds. To run redis locally we need to run `redis-cli` in another terminal.
