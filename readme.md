@@ -74,3 +74,8 @@ We have a function check_admin that permit specific access only for admins,.
 
 - TASK B9. (3 бали) Кешування на рівні API.
 As a cache storage I used Redis and for caching - external library called fastapi-cache2. I created a page that has a time-consumptive function and caches the result after executing. Cache lasts 15 seconds. To run redis locally we need to run `redis-cli` in another terminal.
+
+- TASK B7. (3 бали) Serverless.
+I put the minimal version of program on AWS Lambda. We can access it using link
+https://ak47ucyrrj42c3qnx5zlijmghq0fxlig.lambda-url.eu-north-1.on.aws/
+Firstly, dependencies was build using requirements, then we made zip file with dependencies and after we put our program on top
