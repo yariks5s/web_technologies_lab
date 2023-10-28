@@ -16,6 +16,7 @@ from fastapi_cache.backends.redis import RedisBackend
 from fastapi_cache.decorator import cache
 
 from redis import asyncio as aioredis
+import redis
 
 from typing import Callable, Optional, Annotated
 from models import CATEGORIES
@@ -34,10 +35,21 @@ user_dependency = Annotated[dict, Depends(get_current_user)]
 
 app = FastAPI()
 
+rd = redis.Redis(host="localhost", port=6379, db=0)
+
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 templates = Jinja2Templates(directory="templates")
 app.mount("/static", StaticFiles(directory="templates/static"), name="static")
+
+@app.get('/compute_consumptive/')
+async def long():
+    in_cache = rd.get('compute_consumptive')
+    if not in_cache:
+        time.sleep(2)
+        print("not in cache")
+        rd.set('compute_consumptive', 'new_value', 5)
+    return {'response': in_cache or 'default'}
 
 @app.on_event("startup")
 async def database(**kwargs):
@@ -47,10 +59,6 @@ async def database(**kwargs):
     client.command('INSERT INTO AUTHOR VALUES (\'1\', \'John\', 55, \'john@email.com\');')
     client.command('INSERT INTO CATEGORIES VALUES (\'1\', \'Category 1\');')
     client.command('INSERT INTO CHART_DATA VALUES (\'1\', \'5\'), (\'2\', \'2\');')
-
-    redis = await aioredis.from_url("redis://localhost", encoding="utf8", decode_responses=True)
-    FastAPICache.init(RedisBackend(redis), prefix="fastapi-cache")
-    print("keys:", await redis.acl_whoami())
  
 @app.get('/is_up/')
 async def is_up():
